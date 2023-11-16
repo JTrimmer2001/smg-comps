@@ -1,5 +1,6 @@
 from findclumpScript import findclump as fc
 import os
+import shutil
 
 # directory = 'testfiles'
 
@@ -24,18 +25,26 @@ So the plan is:
     Cant be too hard right?
 '''
 
-directory = 'testfiles'
+directory = 'testfiles' #name of the directory with the image files
 
 for filename in os.listdir(directory):
-    filename = filename.lower()
+    filename = filename.lower() #ensures everything is lower case
 
-    cube = os.path.join(directory,filename)
+    cube = os.path.join(directory,filename) #produces a full file directory for reference purposes
 
-    parts = filename.split('_')
+    parts = filename.split('_') #separates the important bits of the file name
     
     if parts[1] == 'dirtycube':
         output = str('catalogues/'+parts[0]+'/'+parts[2])
-        print(output)
+
+        if os.path.isdir(output):
+            continue
+       
+        #os.makedirs('./'+output) #temporary code to test shutil.copy
         fc(cube,output)
-    else:
-        print('flat :(')
+
+        for pdf in os.listdir(): #Trawls working directory looking for pdfs
+            if pdf.endswith('.pdf') == True:
+                shutil.copy(pdf,output) #copies all pdfs (ie the histogram files) into the targets catalogue folder
+
+
