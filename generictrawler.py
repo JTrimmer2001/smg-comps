@@ -15,9 +15,6 @@ def trawler(path, form = 'none', kword = 'none'):
         files: list of qualifying files found within the directory
     '''
 
-    filename=str(filename)
-    form = str(form)
-    kword = str(kword)
     files = []
 
     if form != 'none':
@@ -33,15 +30,19 @@ def trawler(path, form = 'none', kword = 'none'):
             files.append(filename)
         
         elif form != 'none' and filename.endswith(form) == True:
-            if kword != 'none' and filename.count(kword)==0:
+            if kword != 'none' and filename.count(kword)>0:
                 files.append(filename)
             
             elif kword == 'none':
                 files.append(filename)
 
-        elif kword != 'none' and filename.count(kword) == 0:
+        elif kword != 'none' and filename.count(kword) >0:
             if form != 'none' and filename.endswith(form) == True:
                 files.append(filename)
             
             elif form == 'none':
                 files.append(filename)
+
+    if len(files) == 0:
+        print('No entries found on this run, perhaps your search terms are wrong/too strict?')
+    return(files)
