@@ -43,6 +43,23 @@ def fvsnr():
         plt.savefig('plots/fvsnr/'+parts[0]+'/'+parts[1]+'.png')
         plt.clf()
 
+def snrplotter():
+    cats = gt.trawler('mastercats')
+
+    for i in cats:
+        parts = i.split('_')
+        name = 'mastercats/'+i
+        data = tb.read(name, format='ascii')
+        mask = (data['SNR']>0)
+        fidelity = data[mask]
+
+        if os.path.isdir('plots/SNRhist/'+parts[0]+'/') == False:
+            os.makedirs('plots/SNRhist/'+parts[0]+'/')
+
+        plt.hist(fidelity['SNR'],bins=40)
+        plt.savefig('plots/SNRhist/'+parts[0]+'/'+parts[1]+'.png')
+        plt.xlabel('SNR')
+        plt.clf()
         
-fplotter()
-        
+
+snrplotter()
