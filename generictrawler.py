@@ -46,3 +46,12 @@ def trawler(path, form = 'none', kword = 'none'):
     if len(files) == 0:
         print('No entries found on this run, perhaps your search terms are wrong/too strict?')
     return(files)
+
+def filefilter():
+    dir = trawler('catalogues')
+
+    for i in dir:
+        cats = trawler('catalogues/'+i,kword='_wfidelity')
+
+        for m in cats:
+            su.copy('catalogues/'+i+'/'+m,'mastercats/'+i+m)
