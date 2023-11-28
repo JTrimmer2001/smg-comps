@@ -1,23 +1,48 @@
-import astropy.table as Table
-import numpy as np
 import matplotlib.pyplot as plt
-import generictrawler as trawl
+import numpy as np
+from astropy.table import Table as tb
+import generictrawler as gt
+import os
 
-cats = trawl.trawler('mastercats')
-tablemade = False
+def fplotter():
+    cats = gt.trawler('mastercats')
 
-for f in cats:
-    parts = f.split('_')
-    source = parts[0]
-    table = Table.read('mastercats/'+f,format='ascii')
+    for i in cats:
+        parts = i.split('_')
+        name = 'mastercats/'+i
+        data = tb.read(name, format='ascii')
+        mask = (data['F_kw']>0)
+        fidelity = data[mask]
 
-    table['source'] = source
+        if os.path.isdir('plots/fidelity/'+parts[0]+'/') == False:
+            os.makedirs('plots/fidelity/'+parts[0]+'/')
 
-    if tablemade == False:
-        master = table
-    else:
-        master = Table.vstack([master,table])
+        plt.hist(fidelity['F_kw'],bins=40)
+        plt.savefig('plots/fidelity/'+parts[0]+'/'+parts[1]+'.png')
+        plt.xlabel('F_kw')
+        plt.clf()
 
-Table.write('master.dat',format='ascii')
+def fvsnr():
 
+    cats = gt.trawler('mastercats')
+    for i in cats:
+        parts = i.split('_')
+        name = 'mastercats/'+i
+        data = tb.read(name, format='ascii')
 
+        if os.path.isdir('plots/fvsnr/'+parts[0]+'/') == False:
+            os.makedirs('plots/fvsnr/'+parts[0]+'/')
+
+        mask = (data['F_kw']>0)&(data['SNR']>0)
+        points = data[mask]
+
+        plt.scatter(points['SNR'],points['F_kw'])
+        plt.xlabel('SNR')
+        plt.ylabel('F_kw')
+
+        plt.savefig('plots/fvsnr/'+parts[0]+'/'+parts[1]+'.png')
+        plt.clf()
+
+        
+fplotter()
+        
