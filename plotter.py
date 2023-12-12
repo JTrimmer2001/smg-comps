@@ -53,12 +53,13 @@ def snrplotter():
         mask = (data['SNR']>0)
         fidelity = data[mask]
 
-        if os.path.isdir('plots/SNRhist/'+parts[0]+'/') == False:
-            os.makedirs('plots/SNRhist/'+parts[0]+'/')
+        if os.path.isdir('plots/SNRhist/logy/'+parts[0]+'/') == False:
+            os.makedirs('plots/SNRhist/logy/'+parts[0]+'/')
 
         plt.hist(fidelity['SNR'],bins=40)
-        plt.savefig('plots/SNRhist/'+parts[0]+'/'+parts[1]+'.png')
+        plt.savefig('plots/SNRhist/logy/'+parts[0]+'/'+parts[1]+'.png')
         plt.xlabel('SNR')
+        plt.yscale('log')
         plt.clf()
         
 
