@@ -45,6 +45,11 @@ def trawler(path, form = 'none', kword = 'none'):
 
     if len(files) == 0:
         print('No entries found on this run, perhaps your search terms are wrong/too strict?')
+        files = str('none')
+
+    elif len(files) == 1:
+        files=str(files[0])
+        
     return(files)
 
 def filefilter():
