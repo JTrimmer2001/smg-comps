@@ -5,9 +5,11 @@ from astropy.coordinates import SkyCoord
 from astropy.coordinates import Angle
 from astropy.io import fits
 import generictrawler as gt
-import astropy.wcs as wcs
+from astropy.wcs import WCS
 
 y=0
+
+folder = str('D:/Data/')
 
 table = pd.read_csv('master_fidlim.csv')
 
@@ -27,30 +29,35 @@ for i in sauces:
         length = len(window.index)
         name = str(i + '_dirtycube_' + spw)
 
-        file = gt.trawler(path='E:/ExtHDDBackup/Data/',kword=name) #Finding and opening relevant fits file
+        file = gt.trawler(path=folder,kword=name) #Finding and opening relevant fits file
         if file == 'none':
             continue
 
-        hdul = fits.open('E:/ExtHDDBackup/Data/' +  file)
+        hdul = fits.open(folder +  file)
 
-        xc = hdul[0].header['CRVAL1']*u.deg
+        '''xc = hdul[0].header['CRVAL1']*u.deg
         yc = hdul[0].header['CRVAL2']*u.deg
-
-        wref = SkyCoord(xc,yc) # skycoord of the central pixel
+'''
+        w = WCS(hdul[0].header)
 
         for source in range(length):
-            coords = [window.iloc[source,0],window.iloc[source,1]]
-            clump_pos = SkyCoord(coords[0]*u.deg,coords[1]*u.deg) #Gets world coord of clump
+            coords = [window.iloc[source,3],window.iloc[source,4]]
 
             f = window.iloc[source,2] * 1e9 # frequency source is located at
+
+            wref = w.pixel_to_world([513,513,f,1],0) # skycoord of the central pixel
+            clump_pos = w.pixel_to_world([coords[0],coords[1],f,1]) #Gets world coord of clump
+
             wavel = 3e+8/f
-            fwhm = 1.13 * (wavel/11)
+            fwhm = 1.22 * (wavel/12)
             seplim = Angle(fwhm/np.sqrt(2), unit=u.rad)
  
             sep = clump_pos.separation(wref)
             if sep.radian <= seplim.radian:
                 y+=1
-                print('sources in range:', y)          
+                print('sources in range:', y)       
+
+        hdul.close()   
 
 
 
