@@ -3,6 +3,8 @@ import numpy as np
 from astropy.table import Table as tb
 import generictrawler as gt
 import os
+import pandas as pd
+import math
 
 def fplotter():
     cats = gt.trawler('mastercats')
@@ -91,11 +93,13 @@ def radecFidelity():
         data = tb.read(name, format='ascii')
         mask0_6 = (data['F_kw']>0.6)
         mask0_8 = (data['F_kw']>0.8)
-        fidelity0_6 = data[mask0_6]
+        fidelity = data[mask0_6]
+        mask2 = (fidelity['F_kw']<=0.8)
+        fidelity0_6 = fidelity[mask2]
         fidelity0_8 = data[mask0_8]
 
-        if os.path.isdir('plots/radec/wFkw/'+parts[0]+'/') == False:
-            os.makedirs('plots/radec/wFkw/'+parts[0]+'/')
+        if os.path.isdir('plots/radec/betterwFkw/'+parts[0]+'/') == False:
+            os.makedirs('plots/radec/betterwFkw/'+parts[0]+'/')
 
         fig, ax = plt.subplots()
 
@@ -106,7 +110,7 @@ def radecFidelity():
         ax.set(xlabel='RA',ylabel='DEC')
         ax.legend(handles=[f00,f06,f08])
 
-        fig.savefig('plots/radec/wFkw/'+parts[0]+'/'+parts[1]+'.pdf',bbox_inches='tight')
+        fig.savefig('plots/radec/betterwFkw/'+parts[0]+'/'+parts[1]+'.pdf',bbox_inches='tight')
         plt.close('all')
 
 def special():
@@ -133,4 +137,34 @@ def special():
         fig.savefig('plots/special/aless62_spw2123_radec_freqlimited9798.pdf',bbox_inches='tight')
         plt.close('all')
 
-special()
+def sepAngleHist():
+
+    data = pd.read_csv('separationsMaster.csv') #Loads entire bank of data
+    imgList = pd.unique(data['refObj']) #Gets a list of available images
+
+    for img in imgList:
+        refObjtbl = data[data['refObj']==img]
+
+        if os.path.isdir('plots/separation/FDbins/') == False:
+            os.makedirs('plots/separation/FDbins/')
+
+        n = refObjtbl['sepAngle'].size
+        q1 = refObjtbl['sepAngle'].quantile(0.25)
+        q3 = refObjtbl['sepAngle'].quantile(0.75)
+        iqr = q3-q1
+
+        max = refObjtbl['sepAngle'].max()
+        min = refObjtbl['sepAngle'].min()
+        binw = 2*(iqr * (n)**(-1/3)) #Freedman-Diaconis rule: https://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule
+        bins = math.ceil((max-min)/binw)
+
+        fig, ax = plt.subplots()
+
+        hist1 = ax.hist(refObjtbl['sepAngle'],bins=bins)
+        ax.set(xlabel='Separation angle (degrees)',ylabel='N')
+
+        fig.savefig('plots/separation/FDbins/'+img+'.pdf',bbox_inches='tight')
+        plt.close('all')
+
+
+sepAngleHist()
