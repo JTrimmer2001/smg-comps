@@ -85,7 +85,7 @@ def radec():
         plt.clf()
 
 def radecFidelity():
-    cats = gt.trawler('mastercats')
+    '''cats = gt.trawler('mastercats')
 
     for i in cats:
         parts = i.split('_')
@@ -111,7 +111,49 @@ def radecFidelity():
         ax.legend(handles=[f00,f06,f08])
 
         fig.savefig('plots/radec/betterwFkw/'+parts[0]+'/'+parts[1]+'.pdf',bbox_inches='tight')
-        plt.close('all')
+        plt.close('all')'''
+    
+    alldata = pd.read_csv('master.csv')
+    limdata = pd.read_csv('master_beamlim.csv')
+
+    imglist = pd.unique(limdata['source'])
+
+    for img in imglist:
+        imgAll = alldata[alldata['source'] == img]
+        limAll = limdata[limdata['source'] == img]
+
+        limWindow = pd.unique(limAll['window'])
+
+        if os.path.isdir('plots/radec/beamLimFkw/'+img+'/') == False:
+            os.makedirs('plots/radec/beamLimFkw/'+img+'/')
+
+        for window in limWindow:
+
+            imgWin = imgAll[imgAll['window'] == window]
+            limWin = limAll[limAll['window'] == window]
+
+            mask0_6 = (limWin['F_kw']>0.6)
+            mask0_8 = (limWin['F_kw']>0.8)
+            fidelity = limWin[mask0_6]
+            mask2 = (fidelity['F_kw']<=0.8)
+            fidelity0_6 = fidelity[mask2]
+            fidelity0_8 = limWin[mask0_8]
+
+            fig, ax = plt.subplots()
+
+            f00=ax.scatter(imgWin['RA'], imgWin['DEC'],s=0.5,c='0.8',label='Raw data')
+            f06=ax.scatter(fidelity0_6['RA'],fidelity0_6['DEC'],marker='2',c='r',label='0.6 < F_kw <= 0.8')
+            f08=ax.scatter(fidelity0_8['RA'],fidelity0_8['DEC'],marker='1',c='b',label='F_kw > 0.8')
+
+            ax.set(xlabel='RA',ylabel='DEC')
+            ax.legend(handles=[f00,f06,f08])
+
+            fig.savefig('plots/radec/beamLimFkw/'+img+'/'+window+'.pdf',bbox_inches='tight')
+            plt.close('all')
+
+
+
+
 
 def special():
         data = tb.read('mastercats/aless62_spw2123_clumpsP_minSNR_3.0_cropped_wfidelity_sorted.cat', format='ascii')
@@ -139,14 +181,15 @@ def special():
 
 def sepAngleHist():
 
-    data = pd.read_csv('separationsMaster.csv') #Loads entire bank of data
+    data = pd.read_csv('sepMasterBeamLim.csv') #Loads entire bank of data
     imgList = pd.unique(data['refObj']) #Gets a list of available images
+    path = 'plots/separation/beamlim/FDbins/'
 
     for img in imgList:
         refObjtbl = data[data['refObj']==img]
 
-        if os.path.isdir('plots/separation/FDbins/') == False:
-            os.makedirs('plots/separation/FDbins/')
+        if os.path.isdir(path) == False:
+            os.makedirs(path)
 
         n = refObjtbl['sepAngle'].size
         q1 = refObjtbl['sepAngle'].quantile(0.25)
@@ -163,8 +206,8 @@ def sepAngleHist():
         hist1 = ax.hist(refObjtbl['sepAngle'],bins=bins)
         ax.set(xlabel='Separation angle (degrees)',ylabel='N')
 
-        fig.savefig('plots/separation/FDbins/'+img+'.pdf',bbox_inches='tight')
+        fig.savefig(path+img+'.pdf',bbox_inches='tight')
         plt.close('all')
 
 
-sepAngleHist()
+radecFidelity()

@@ -13,7 +13,7 @@ y=0
 
 folder = str('D:/Data/') #Gets the suffix for the file address
 
-table = pd.read_csv('master_fidlim.csv')
+table = pd.read_csv('master_beamlim.csv')
 
 ###############################################################################
 
@@ -21,7 +21,10 @@ table = pd.read_csv('master_fidlim.csv')
 flim.to_csv('master_fidlim.csv')'''
 
 def beamlimit():
+    y=0
     sauces = pd.unique(table['source']) #Makes a list of the source images in the source column of the table
+
+    dflist = []
 
     for i in sauces: #Iterates through the images
         img = table[table['source'] == i] #Gets a list of objects in the image
@@ -38,31 +41,46 @@ def beamlimit():
             if file == 'none':
                 continue #Skips iteration if no files are found, this shouldn't occur
 
-            hdul = fits.open(folder +  file) #Opens image file for the window
+            with fits.open(folder + file) as hdul:
+                data = hdul[0].data
+                hdr = hdul[0].header
+
+            '''hdul = fits.open(folder +  file) #Opens image file for the window'''
 
             '''xc = hdul[0].header['CRVAL1']*u.deg
             yc = hdul[0].header['CRVAL2']*u.deg
     '''
-            w = WCS(hdul[0].header) #SHOULD set the wcs settings for this file
+            w = WCS(hdr, naxis=(1,2)) #SHOULD set the wcs settings for this file
+
+            crx = hdr['CRPIX1']
+            cry = hdr['CRPIX2']
 
             for source in range(length):
                 coords = [window.iloc[source,3],window.iloc[source,4]] #Gets the image coordinates of the object
 
                 f = window.iloc[source,2] * 1e9 # frequency source is located at
 
-                wref = SkyCoord(w.pixel_to_world(513,513,f,1)) # skycoord of the central pixel
-                clump_pos = SkyCoord(w.pixel_to_world(coords[0],coords[1],f,1)) #Gets world coord of clump
+                '''fslice = data[:,:,f,1]'''
+
+                wref = SkyCoord(w.pixel_to_world(crx,cry)) # skycoord of the central pixel
+                clump_pos = SkyCoord(w.pixel_to_world(coords[0],coords[1])) #Gets world coord of clump
 
                 wavel = 3e+8/f
-                fwhm = 1.22 * (wavel/12)
+                fwhm = 1.22 * (wavel/12) #Calculating beam radius at current f
                 seplim = Angle(fwhm/np.sqrt(2), unit=u.rad)
     
-                sep = clump_pos.separation(wref)
-                if sep.radian <= seplim.radian:
-                    y+=1
-                    print('sources in range:', y)       
+                sep = clump_pos.separation(wref) #finding distance from center
+                if sep.radian <= seplim.radian: #determining if object is in the beam
 
-            hdul.close()   
+                    y+=1
+                    row = window.iloc[[source]]#selecting the current objects data
+                    dflist.append(row)
+     
+            hdul.close()
+            
+    filtered = pd.concat(dflist)
+    filtered.to_csv('master_beamlim.csv',index = False)
+    print('sources in range:', y)   
 
 
 def separations():
@@ -116,7 +134,7 @@ def separations():
 
     seps = pd.DataFrame(masterList)  #Produces a data frame and saves as a csv
 
-    seps.to_csv('separationsMaster.csv')
+    seps.to_csv('sepMasterBeamLim.csv',index = False)
 
 
-separations()           
+separations()          
