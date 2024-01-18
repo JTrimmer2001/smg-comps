@@ -68,6 +68,7 @@ def beamlimit():
                 wavel = 3e+8/f
                 fwhm = 1.22 * (wavel/12) #Calculating beam radius at current f
                 seplim = Angle(fwhm/np.sqrt(2), unit=u.rad)
+                tester = seplim.arcsec
     
                 sep = clump_pos.separation(wref) #finding distance from center
                 if sep.radian <= seplim.radian: #determining if object is in the beam
@@ -137,4 +138,63 @@ def separations():
     seps.to_csv('sepMasterBeamLim.csv',index = False)
 
 
-separations()          
+def dupeCatcher():
+    idlist = [] #List of IDs to be added to the database (for duplicate entry checking)
+    masterlist = [] #List of objects to be added, will add dicts and construct from that
+
+    images = pd.unique(table['source']) #List of target objects
+
+    for img in images:
+        imgTable = table[table['source'] == img] #Filters table down to current image
+        windows = pd.unique(imgTable['window']) #generates a list of the spws used in this image
+
+        for window in windows:
+
+            winTable = imgTable[imgTable['window']==window]#Narrows table to objects within current window
+            ids = pd.unique(winTable['ID']) #Gets list of IDs
+
+            for i in ids:
+
+                currentObj = winTable[winTable['ID']==i] #Single row of window table containing current primary object data
+
+                primaryObj = {'ra':currentObj.iloc[0,0],
+                              'dec':currentObj.iloc[0,1],
+                              'freq':currentObj.iloc[0,2],
+                              'id':currentObj.iloc[0,11]} #Dict organising relevant data into a easily accesible spot
+                
+                primarySC = SkyCoord(primaryObj['ra'],primaryObj['dec'], unit=u.deg) 
+                #skycoord object for primary object, allows for the separation 
+                
+                for s in ids:
+
+                    if s == i: #skips same id
+                        continue
+
+                    currentObj = winTable[winTable['ID']==s]
+
+                    secondaryObj = {'ra':currentObj.iloc[0,0],
+                                    'dec':currentObj.iloc[0,1],
+                                    'freq':currentObj.iloc[0,2],
+                                    'id':currentObj.iloc[0,11]}
+                    
+                    secondarySC = SkyCoord(secondaryObj['ra'],secondaryObj['dec'], unit=u.deg)
+
+                    sepAngle = primarySC.separation(secondarySC)
+
+                    if sepAngle.arcsec <=1:
+                        if s in idlist:
+                            continue
+                        else:
+                            idlist.append(s)
+
+    mask = table['ID'].isin(idlist)
+    dupes = table[mask]
+
+    dupes.to_csv('duplicates_fixed.csv',index=False)
+
+                
+
+
+
+
+dupeCatcher()

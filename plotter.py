@@ -113,8 +113,10 @@ def radecFidelity():
         fig.savefig('plots/radec/betterwFkw/'+parts[0]+'/'+parts[1]+'.pdf',bbox_inches='tight')
         plt.close('all')'''
     
-    alldata = pd.read_csv('master.csv')
-    limdata = pd.read_csv('master_beamlim.csv')
+    alldata = pd.read_csv('master_beamlim.csv')
+    limdata = pd.read_csv('duplicates_fixed.csv')
+    path = 'plots/radec/dupes_BL_fixed/'
+    #### INIT File paths and strings ####
 
     imglist = pd.unique(limdata['source'])
 
@@ -124,31 +126,36 @@ def radecFidelity():
 
         limWindow = pd.unique(limAll['window'])
 
-        if os.path.isdir('plots/radec/beamLimFkw/'+img+'/') == False:
-            os.makedirs('plots/radec/beamLimFkw/'+img+'/')
+        if os.path.isdir(path+img+'/') == False:
+            os.makedirs(path+img+'/')
 
         for window in limWindow:
 
             imgWin = imgAll[imgAll['window'] == window]
             limWin = limAll[limAll['window'] == window]
 
-            mask0_6 = (limWin['F_kw']>0.6)
+            '''mask0_6 = (limWin['F_kw']>0.6)
             mask0_8 = (limWin['F_kw']>0.8)
             fidelity = limWin[mask0_6]
             mask2 = (fidelity['F_kw']<=0.8)
             fidelity0_6 = fidelity[mask2]
-            fidelity0_8 = limWin[mask0_8]
+            fidelity0_8 = limWin[mask0_8]'''###Use when using a full set of data
 
             fig, ax = plt.subplots()
 
-            f00=ax.scatter(imgWin['RA'], imgWin['DEC'],s=0.5,c='0.8',label='Raw data')
+            '''f00=ax.scatter(imgWin['RA'], imgWin['DEC'],s=0.5,c='0.8',label='Raw data')
             f06=ax.scatter(fidelity0_6['RA'],fidelity0_6['DEC'],marker='2',c='r',label='0.6 < F_kw <= 0.8')
             f08=ax.scatter(fidelity0_8['RA'],fidelity0_8['DEC'],marker='1',c='b',label='F_kw > 0.8')
+            ax.legend(handles=[f00,f06,f08])'''###Use this when doing plots with a full sample of raw data
+
+            raw = ax.scatter(imgWin['RA'], imgWin['DEC'], s=0.5,c='r', label = 'All Data')
+            data = ax.scatter(limWin['RA'], limWin['DEC'],marker='1',c='b',label='Duplicates')
+            ax.legend(handles=[raw,data])
 
             ax.set(xlabel='RA',ylabel='DEC')
-            ax.legend(handles=[f00,f06,f08])
+            
 
-            fig.savefig('plots/radec/beamLimFkw/'+img+'/'+window+'.pdf',bbox_inches='tight')
+            fig.savefig(path+img+'/'+window+'.pdf',bbox_inches='tight')
             plt.close('all')
 
 
