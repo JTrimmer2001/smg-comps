@@ -1,3 +1,4 @@
+from ctypes import windll
 import pandas as pd
 import numpy as np
 import astropy.units as u
@@ -13,7 +14,7 @@ y=0
 
 folder = str('D:/Data/') #Gets the suffix for the file address
 
-table = pd.read_csv('master_beamlim.csv')
+table = pd.read_csv('master_doubles.csv')
 
 ###############################################################################
 
@@ -187,14 +188,90 @@ def dupeCatcher():
                         else:
                             idlist.append(s)
 
-    mask = table['ID'].isin(idlist)
+    '''mask = table['ID'].isin(idlist)
     dupes = table[mask]
 
-    dupes.to_csv('duplicates_fixed.csv',index=False)
+    dupes.to_csv('duplicates_fixed.csv',index=False)'''
+    print(idlist)
 
                 
+def ClashOfTheClumps():
+    Ids = []
+    
+    knockouts = []
+
+    sourceFile = pd.read_csv('duplicates_fixed.csv',index_col='ID')
+    sourceImgList = pd.unique(sourceFile['source'])
+
+    for source in sourceImgList:
+        sourceImg = sourceFile[sourceFile['source']==source]
+        windowList = pd.unique(sourceImg['window'])
+
+        for window in windowList:
+            img = sourceImg[sourceImg['window']==window]
+
+            windowIds = img.index.values.tolist()
+
+            for i in windowIds:
+                if i in knockouts:
+                    continue
+
+                primaryObj = {'ra':img.loc[i,'RA'],
+                              'dec':img.loc[i,'DEC'],
+                              'f_kw':img.loc[i,'F_kw'],
+                              'snr':img.loc[i,'SNR']}
+                
+                primarySC = SkyCoord(primaryObj['ra'],primaryObj['dec'], unit=u.deg)
+                
+                for s in windowIds:
+
+                    if s in knockouts:
+                        continue
+                    elif s == i:
+                        continue
+
+                    secondaryObj = {'ra':img.loc[s,'RA'],
+                                    'dec':img.loc[s,'DEC'],
+                                    'f_kw':img.loc[s,'F_kw'],
+                                    'snr':img.loc[s,'SNR']}
+                    
+                    secondarySC = SkyCoord(secondaryObj['ra'],secondaryObj['dec'],unit=u.deg)
+
+                    sep = primarySC.separation(secondarySC)
+
+                    if sep.arcsec > 1:
+                        continue
+                    elif sep.arcsec <= 1:
+                        if primaryObj['f_kw']>secondaryObj['f_kw']:
+                            knockouts.append(s)
+                        elif primaryObj['f_kw']<secondaryObj['f_kw']:
+                            knockouts.append(i)
+                        elif primaryObj['f_kw']==secondaryObj['f_kw']:
+                            if primaryObj['snr']>secondaryObj['snr']:
+                                knockouts.append(s)
+                            elif primaryObj['snr']<secondaryObj['snr']:
+                                knockouts.append(i)
+                            else:
+                                knockouts.append(s)
+
+            for id in windowIds:
+
+                if id in knockouts:
+                    continue
+                else:
+                    Ids.append(id)
+
+    print(Ids)
+
+    mask = ~table['ID'].isin(knockouts)
+    out = table[mask]
+
+    out.to_csv('master_doubles.csv',index=False)
 
 
 
 
+
+
+#ClashOfTheClumps()
 dupeCatcher()
