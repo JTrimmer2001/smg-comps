@@ -114,8 +114,8 @@ def radecFidelity():
         plt.close('all')'''
     
     alldata = pd.read_csv('master_beamlim.csv')
-    limdata = pd.read_csv('duplicates_fixed.csv')
-    path = 'plots/radec/dupes_BL_fixed/'
+    limdata = pd.read_csv('master_doubles.csv')
+    path = 'plots/radec/doubles_testing/'
     #### INIT File paths and strings ####
 
     imglist = pd.unique(limdata['source'])
