@@ -140,6 +140,7 @@ def separations():
 
 
 def dupeCatcher():
+    count = 0
     idlist = [] #List of IDs to be added to the database (for duplicate entry checking)
     masterlist = [] #List of objects to be added, will add dicts and construct from that
 
@@ -182,17 +183,18 @@ def dupeCatcher():
 
                     sepAngle = primarySC.separation(secondarySC)
 
-                    if sepAngle.arcsec <=1:
+                    if sepAngle.arcsec <=3:
                         if s in idlist:
                             continue
                         else:
-                            idlist.append(s)
+                            #idlist.append(s)
+                            count+=1
 
     '''mask = table['ID'].isin(idlist)
     dupes = table[mask]
 
     dupes.to_csv('duplicates_fixed.csv',index=False)'''
-    print(idlist)
+    print(count)
 
                 
 def ClashOfTheClumps():
