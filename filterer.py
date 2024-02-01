@@ -5,6 +5,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import Angle
 from astropy.io import fits
+from sympy import false
 import generictrawler as gt
 from astropy.wcs import WCS
 
@@ -12,14 +13,15 @@ y=0
 
 ######################CHANGE THE FOLDER BEFORE RUNNING#########################
 
-folder = str('D:/Data/') #Gets the suffix for the file address
+folder = str('F:/Data/') #Gets the suffix for the file address
 
-table = pd.read_csv('master_doubles.csv')
+table = pd.read_csv('master_beamlim.csv')
 
 ###############################################################################
-
-'''flim = table[table['F_kw'] > 0.6] #Imposes a fidelity per kernel width limit of 0.6
-flim.to_csv('master_fidlim.csv')'''
+def fidlim():
+    tbl = pd.read_csv('master.csv')
+    flim = tbl[tbl['F'] > 0.6] #Imposes a fidelity per kernel width limit of 0.6
+    flim.to_csv('master_fidlim.csv',index=False)
 
 def beamlimit():
     y=0
@@ -84,7 +86,6 @@ def beamlimit():
     filtered.to_csv('master_beamlim.csv',index = False)
     print('sources in range:', y)   
 
-
 def separations():
 
     masterList = []
@@ -138,7 +139,6 @@ def separations():
 
     seps.to_csv('sepMasterBeamLim.csv',index = False)
 
-
 def dupeCatcher():
     count = 0
     idlist = [] #List of IDs to be added to the database (for duplicate entry checking)
@@ -190,13 +190,12 @@ def dupeCatcher():
                             #idlist.append(s)
                             count+=1
 
-    '''mask = table['ID'].isin(idlist)
+    mask = table['ID'].isin(idlist)
     dupes = table[mask]
 
-    dupes.to_csv('duplicates_fixed.csv',index=False)'''
-    print(count)
-
-                
+    dupes.to_csv('duplicates_fixed.csv',index=False)
+    
+           
 def ClashOfTheClumps():
     Ids = []
     
@@ -272,8 +271,8 @@ def ClashOfTheClumps():
 
 
 
-
-
+dupeCatcher()
+ClashOfTheClumps()
 
 #ClashOfTheClumps()
-dupeCatcher()
+#dupeCatcher()
