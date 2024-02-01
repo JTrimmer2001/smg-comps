@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.coordinates import SpectralCoord
 from astropy.coordinates import Angle
 from astropy.io import fits
 from sympy import false
@@ -15,7 +16,7 @@ y=0
 
 folder = str('F:/Data/') #Gets the suffix for the file address
 
-table = pd.read_csv('master_beamlim.csv')
+table = pd.read_csv('FCatalogues/matched_err1.2.csv',index_col='ID')
 
 ###############################################################################
 def fidlim():
@@ -269,10 +270,23 @@ def ClashOfTheClumps():
 
     out.to_csv('master_doubles.csv',index=False)
 
+def lineIdentifier():
+    '''Takes in a set of values with assosciated high and low redshifts 
+        and converts to a rest frame wavelength, before comparing to a 
+        catalogue of line emission frequencies. Built on the photometric
+        data catalogue used for the masters project in 2024.'''
+    ids = list(table.index.values) #Gets list of indexes for iterating through
 
+    for i in ids:
+        specinfo = {'freq_ghz':table.at[i,'FREQ_GHZ'],
+                    'zhi'     :table.at[i,'zhi'],
+                    'zlo'     :table.at[i,'zlo']} #Dictionary of hi and lo z, plus the line freq
+        
+        hiZcoord = SpectralCoord(value=specinfo['freq_ghz'],unit=u.GHz,redshift=specinfo['zhi'])
+        hiRest = hiZcoord.to_rest()
+        loZcoord = SpectralCoord(value=specinfo['freq_ghz'],unit=u.GHz,redshift=specinfo['zlo'])
+        loRest = loZcoord.to_rest() #gets rest frame hi and lo estimates of emission freq
 
-dupeCatcher()
-ClashOfTheClumps()
-
+lineIdentifier()
 #ClashOfTheClumps()
 #dupeCatcher()
