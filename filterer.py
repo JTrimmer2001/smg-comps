@@ -4,11 +4,13 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import SpectralCoord
+from astropy.coordinates import SpectralQuantity
 from astropy.coordinates import Angle
 from astropy.io import fits
 from sympy import false
 import generictrawler as gt
 from astropy.wcs import WCS
+from astroquery.atomic import AtomicLineList
 
 y=0
 
@@ -280,12 +282,33 @@ def lineIdentifier():
     for i in ids:
         specinfo = {'freq_ghz':table.at[i,'FREQ_GHZ'],
                     'zhi'     :table.at[i,'zhi'],
-                    'zlo'     :table.at[i,'zlo']} #Dictionary of hi and lo z, plus the line freq
+                    'zlo'     :table.at[i,'zlo'],
+                    'zphot'   :table.at[i,'zphot']} #Dictionary of hi and lo z, plus the line freq
         
         hiZcoord = SpectralCoord(value=specinfo['freq_ghz'],unit=u.GHz,redshift=specinfo['zhi'])
-        hiRest = hiZcoord.to_rest()
+        hiRestCoord = hiZcoord.to_rest()
+        hiRest = SpectralQuantity(value=hiRestCoord.value,unit=hiRestCoord.unit)
         loZcoord = SpectralCoord(value=specinfo['freq_ghz'],unit=u.GHz,redshift=specinfo['zlo'])
-        loRest = loZcoord.to_rest() #gets rest frame hi and lo estimates of emission freq
+        loRestCoord = loZcoord.to_rest() #gets rest frame hi and lo estimates of emission freq
+        loRest = SpectralQuantity(value=loRestCoord.value,unit=loRestCoord.unit)
+        photZcoord = SpectralCoord(value=specinfo['freq_ghz'],unit=u.GHz,redshift=specinfo['zphot'])
+        midRest = photZcoord.to_rest() #Same thing but for best guess Z
+
+        '''wavelength_range = (hiRest,loRest)
+
+        lineList = AtomicLineList.query_object(wavelength_range=wavelength_range,
+                                                wavelength_type='Vacuum',
+                                                element_spectrum='c-o',
+                                                output_columns=('spec','term','prob'))
+        
+        wavelength_range = (hiRestCoord.value * u.GHz,loRestCoord.value * u.GHz)
+
+        lineList = AtomicLineList.query_object(wavelength_range=wavelength_range, wavelength_type='Air',
+                            wavelength_accuracy=20, element_spectrum='C II-IV')
+        
+        print(lineList)
+        input()'''#This is a bust, line querying causes recursion
+
 
 lineIdentifier()
 #ClashOfTheClumps()
