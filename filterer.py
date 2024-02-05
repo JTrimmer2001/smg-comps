@@ -10,7 +10,7 @@ from astropy.io import fits
 from sympy import false
 import generictrawler as gt
 from astropy.wcs import WCS
-from astroquery.atomic import AtomicLineList
+from astroquery.splatalogue import Splatalogue
 
 y=0
 
@@ -18,7 +18,7 @@ y=0
 
 folder = str('F:/Data/') #Gets the suffix for the file address
 
-table = pd.read_csv('FCatalogues/matched_err1.2.csv',index_col='ID')
+table = pd.read_csv('FCatalogues/matched_err1.0.csv',index_col='ID')
 
 ###############################################################################
 def fidlim():
@@ -287,27 +287,37 @@ def lineIdentifier():
         
         hiZcoord = SpectralCoord(value=specinfo['freq_ghz'],unit=u.GHz,redshift=specinfo['zhi'])
         hiRestCoord = hiZcoord.to_rest()
-        hiRest = SpectralQuantity(value=hiRestCoord.value,unit=hiRestCoord.unit)
+        hiRest = hiRestCoord.value*u.GHz
         loZcoord = SpectralCoord(value=specinfo['freq_ghz'],unit=u.GHz,redshift=specinfo['zlo'])
         loRestCoord = loZcoord.to_rest() #gets rest frame hi and lo estimates of emission freq
-        loRest = SpectralQuantity(value=loRestCoord.value,unit=loRestCoord.unit)
+        loRest = loRestCoord.value*u.GHz
         photZcoord = SpectralCoord(value=specinfo['freq_ghz'],unit=u.GHz,redshift=specinfo['zphot'])
         midRest = photZcoord.to_rest() #Same thing but for best guess Z
 
-        '''wavelength_range = (hiRest,loRest)
+        length_range = (hiRest,loRest)
 
-        lineList = AtomicLineList.query_object(wavelength_range=wavelength_range,
-                                                wavelength_type='Vacuum',
-                                                element_spectrum='c-o',
-                                                output_columns=('spec','term','prob'))
+        colines = Splatalogue.query_lines(min_frequency=hiRest,max_frequency=loRest,chemical_name=' CO ',only_astronomically_observed=True)
         
-        wavelength_range = (hiRestCoord.value * u.GHz,loRestCoord.value * u.GHz)
+        '''wavelength_range = (hiRestCoord.value * u.GHz,loRestCoord.value * u.GHz)
 
         lineList = AtomicLineList.query_object(wavelength_range=wavelength_range, wavelength_type='Air',
-                            wavelength_accuracy=20, element_spectrum='C II-IV')
+                            wavelength_accuracy=20, element_spectrum='C II-IV',
+                                                output_columns=('spec','term','prob'))'''
         
-        print(lineList)
-        input()'''#This is a bust, line querying causes recursion
+        print('Frequencies used: {}'.format(length_range))
+        print(colines['Species','Freq-GHz(rest frame,redshifted)','Resolved QNs'])
+        transition = str(input())#This is a bust, line querying causes recursion
+        existing = table.at[i,'transition']
+
+        if transition == '':
+            continue
+        else:
+            if pd.isna(table.at[i,'transition']) == True:
+                table.at[i,'transition']=transition
+            else:
+                table.at[i,'transition']=str(transition+' or '+table.at[i,'transition'])
+
+    table.to_csv('matched_err1.0_with_lines.csv',index=False)
 
 
 lineIdentifier()
