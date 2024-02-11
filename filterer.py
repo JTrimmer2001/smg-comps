@@ -1,4 +1,4 @@
-from ctypes import windll
+#from ctypes import windll
 import pandas as pd
 import numpy as np
 import astropy.units as u
@@ -7,7 +7,7 @@ from astropy.coordinates import SpectralCoord
 from astropy.coordinates import SpectralQuantity
 from astropy.coordinates import Angle
 from astropy.io import fits
-from sympy import false
+#from sympy import false
 import generictrawler as gt
 from astropy.wcs import WCS
 from astroquery.splatalogue import Splatalogue
@@ -18,7 +18,7 @@ y=0
 
 folder = str('F:/Data/') #Gets the suffix for the file address
 
-table = pd.read_csv('FCatalogues/matched_err1.0.csv',index_col='ID')
+table = pd.read_csv('matched_err1.0_with_lines.csv')
 
 ###############################################################################
 def fidlim():
@@ -296,7 +296,8 @@ def lineIdentifier():
 
         length_range = (hiRest,loRest)
 
-        colines = Splatalogue.query_lines(min_frequency=hiRest,max_frequency=loRest,chemical_name=' CO ',only_astronomically_observed=True)
+        colines = Splatalogue.query_lines(min_frequency=hiRest,max_frequency=loRest,chemical_name=' HCO+ ',only_astronomically_observed=True)
+        colines.keep_columns(['Species','Freq-GHz(rest frame,redshifted)','Resolved QNs','Lovas/AST Intensity'])
         
         '''wavelength_range = (hiRestCoord.value * u.GHz,loRestCoord.value * u.GHz)
 
@@ -305,9 +306,11 @@ def lineIdentifier():
                                                 output_columns=('spec','term','prob'))'''
         
         print('Frequencies used: {}'.format(length_range))
-        print(colines['Species','Freq-GHz(rest frame,redshifted)','Resolved QNs'])
-        transition = str(input())#This is a bust, line querying causes recursion
-        existing = table.at[i,'transition']
+        colines.pprint_all(max_lines=-1)
+        existing = table.iat[i,61]
+        
+        transition = str(input())
+        
 
         if transition == '':
             continue
@@ -315,7 +318,9 @@ def lineIdentifier():
             if pd.isna(table.at[i,'transition']) == True:
                 table.at[i,'transition']=transition
             else:
-                table.at[i,'transition']=str(transition+' or '+table.at[i,'transition'])
+                table.at[i,'transition']=str(transition+' or '+existing)
+            
+
 
     table.to_csv('matched_err1.0_with_lines.csv',index=False)
 
