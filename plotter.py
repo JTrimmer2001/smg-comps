@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy.table import Table as tb
+from astropy.cosmology import FlatLambdaCDM
 import generictrawler as gt
 import os
 import pandas as pd
@@ -216,5 +217,25 @@ def sepAngleHist():
         fig.savefig(path+img+'.pdf',bbox_inches='tight')
         plt.close('all')
 
+def luminosityFunction():
+    table = pd.read_csv('matched_err1.0_with_lines.csv')
+    index = list(table.index.values)
+    cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
 
-radecFidelity()
+    co2_1 = []
+    co3_2 = []
+    co4_3 = []
+
+    for item in index:
+        z = table.at[item, 'zphot']
+        D_l = cosmo.luminosity_distance(z=z)
+
+        F = table.at[item, 'FLUX_MAX']
+        L = F/(4*math.pi*(D_l**2))
+
+        V = 'SAMPLE VOLUME PLACEHOLDER'
+
+        Lfunc = (1/V)
+
+
+
