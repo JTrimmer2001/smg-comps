@@ -6,6 +6,7 @@ import generictrawler as gt
 import os
 import pandas as pd
 import math
+import astrofuncs as af
 
 def fplotter():
     cats = gt.trawler('mastercats')
@@ -226,16 +227,68 @@ def luminosityFunction():
     co3_2 = []
     co4_3 = []
 
+    candidateStats = {}
+
     for item in index:
         z = table.at[item, 'zphot']
         D_l = cosmo.luminosity_distance(z=z)
+        fidelity = table.at[item,'F']
+        line = str()
+
+        if table.at[item,'CO2-1'] == True:
+            line = '2-1'
+            v = af.obsVolume(z1=1.00,z2=1.75,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+        elif table.at[item,'CO3-2'] == True:
+            line = '3-2'
+            v = af.obsVolume(z1=2.02,z2=3.11,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+        elif table.at[item,'CO4-3'] == True:
+            line = '4-3'
+            v = af.obsVolume(z1=3.01,z2=4.48,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+        else:
+            continue
 
         F = table.at[item, 'FLUX_MAX']
-        L = F/(4*math.pi*(D_l**2))
+        L = F/(4*math.pi*(D_l.value**2))
+        Lfunc = (1/v)*L*fidelity
+        stats = [L,Lfunc]
 
-        V = 'SAMPLE VOLUME PLACEHOLDER'
+        if line == '2-1':
+            co2_1.append(stats)
+        elif line == '3-2':
+            co3_2.append(stats)
+        elif line == '4-3':
+            co4_3.append(stats)
+        else:
+            continue
 
-        Lfunc = (1/V)
+    f, axs = plt.subplots(1,3,sharey=True)
+
+    x, y = zip(*co2_1)
+    axs[0].scatter(x,y,label='CO2-1')
+    #axs[0].xlabel('luminosity')
+    #axs[0].ylabel('Density Mpc^-3')
+
+    x, y = zip(*co3_2)
+    axs[1].scatter(x,y,label='CO3-2')
+    #axs[1].xlabel('luminosity')
+    #axs[1].ylabel('Density Mpc^-3')
+
+    x, y = zip(*co4_3)
+    axs[2].scatter(x,y,label='CO4-3')
+    #axs[2].xlabel('luminosity')
+    #axs[2].ylabel('Density Mpc^-3')
+
+    for ax in axs:
+        ax.set(xlabel='Luminosity',ylabel='Density Mpc^-3')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        '''ax.set_xlim(7,12)
+        ax.set_ylim(-6,-0.5)'''
+        ax.label_outer()
+        ax.legend()
+
+    f.tight_layout()
+    plt.show()
 
 
-
+luminosityFunction()
