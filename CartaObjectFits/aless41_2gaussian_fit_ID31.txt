@@ -1,0 +1,30 @@
+# image: aless41_dirtycube_allspw_nopbcorr.fits
+# statistic: 4
+# ellipse[[185.769577pix, 187.963144pix], [3.243746pix, 4.780258pix], 5.440332deg]
+# ellipse(wcs:ICRS)[[3:31:10.0762165423, -27:52:36.7592113845], [0.8109365406", 1.1950643756"], 5.440332deg]
+
+ Gaussian function fitting with 2 component(s)
+ summary from method 'trust-region/levenberg-marquardt'
+ number of iterations = 6
+ function evaluations = 49
+ Jacobian evaluations = 0
+ reason for stopping  = small gradient
+ initial |f(x)|       = 0.001176
+ final |f(x)|         = 0.000580
+ initial cost         = 1.382595235369e-06
+ final cost           = 3.363009036678e-07
+ final cond(J)        = 1.026666441854e+06
+
+ baseline
+ y intercept  (fixed) = 0.000000000000e+00 (Jy/beam)
+ slope        (fixed) = 0.000000000000e+00 (Jy/beam / km/s)
+ component #1
+ amp1                 = 6.882342146525e-04 (Jy/beam) ± 3.270859553036e-05 (4.75%)
+ center1              = -4.110068434054e+04 (km/s) ± 1.038310697351e+01 (0.0253%)
+ fwhm1                = 3.815872569280e+02 (Jy/beam) ± 2.625041144860e+01 (6.88%)
+ integral of function ~= 2.795518253829e-01 (Jy/beam * km/s) ± 1.619200549558e-02 (5.79%)
+ component #2
+ amp2                 = 6.879798824454e-04 (Jy/beam) ± 3.364374023355e-05 (4.89%)
+ center2              = -4.055880261825e+04 (km/s) ± 1.007959102481e+01 (0.0249%)
+ fwhm2                = 3.558943796270e+02 (Jy/beam) ± 2.504380025902e+01 (7.04%)
+ integral of function ~= 2.606328054149e-01 (Jy/beam * km/s) ± 1.575101345083e-02 (6.04%)
