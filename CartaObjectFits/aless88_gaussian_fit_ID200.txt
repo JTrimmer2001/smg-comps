@@ -1,0 +1,25 @@
+# image: aless88_dirtycube_spw2123_natweight_nopbcorr.fits
+# statistic: 4
+# ellipse[[694.520113pix, 249.655484pix], [3.552033pix, 5.005080pix], 356.633539deg]
+# ellipse(wcs:ICRS)[[3:31:53.2474396374, -27:54:10.3473795885], [0.3907236548", 0.5505588086"], 356.633539deg]
+
+ Gaussian function fitting with 1 component(s)
+ summary from method 'trust-region/levenberg-marquardt'
+ number of iterations = 7
+ function evaluations = 32
+ Jacobian evaluations = 0
+ reason for stopping  = small gradient
+ initial |f(x)|       = 0.001460
+ final |f(x)|         = 0.001381
+ initial cost         = 2.131917237394e-06
+ final cost           = 1.905786712597e-06
+ final cond(J)        = 9.659495689570e+05
+
+ baseline
+ y intercept  (fixed) = 0.000000000000e+00 (Jy/beam)
+ slope        (fixed) = 0.000000000000e+00 (Jy/beam / km/s)
+ component #1
+ amp1                 = 3.871396713967e-04 (Jy/beam) ± 5.096629045258e-05 (13.2%)
+ center1              = -1.875299860388e+03 (km/s) ± 1.715085355201e+01 (0.915%)
+ fwhm1                = 2.656799272505e+02 (Jy/beam) ± 4.038717369563e+01 (15.2%)
+ integral of function ~= 1.094860104709e-01 (Jy/beam * km/s) ± 1.441365035839e-02 (13.2%)

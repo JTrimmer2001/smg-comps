@@ -231,7 +231,7 @@ def luminosityFunction():
 
     for item in index:
         z = table.at[item, 'zphot']
-        D_l = cosmo.luminosity_distance(z=z)
+        D_l = cosmo.luminosity_distance(z=z).value
         fidelity = table.at[item,'F']
         line = str()
 
@@ -248,7 +248,8 @@ def luminosityFunction():
             continue
 
         F = table.at[item, 'FLUX_MAX']
-        L = F/(4*math.pi*(D_l.value**2))
+        '''WRONGGGGG'''
+        L = ((3.25e+7)/(1+z)**3)*F*(freq_obs**(-2))*(D_l**2)
         Lfunc = (1/v)*L*fidelity
         stats = [L,Lfunc]
 
