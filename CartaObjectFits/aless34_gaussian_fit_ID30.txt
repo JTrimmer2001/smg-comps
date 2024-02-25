@@ -2,6 +2,8 @@
 # statistic: 4
 # ellipse[[513.223570pix, 511.651390pix], [5.406720pix, 7.350163pix], 337.643322deg]
 # ellipse(wcs:ICRS)[[3:32:17.9498492718, -27:52:33.3183471755], [0.5947392242", 0.8085178997"], 337.643322deg]
+# channel: 55
+# factor: 0.6020610983557569/2.4082443934230278
 
  Gaussian function fitting with 1 component(s)
  summary from method 'trust-region/levenberg-marquardt'
@@ -23,3 +25,4 @@
  center1              = 3.783224399152e+02 (km/s) ± 2.078872993553e+01 (5.49%)
  fwhm1                = 3.548707853298e+02 (Jy/beam) ± 4.895371828242e+01 (13.8%)
  integral of function ~= 1.614943487114e-01 (Jy/beam * km/s) ± 1.929316146158e-02 (11.9%)
+

@@ -52,7 +52,13 @@ def obsVolume(z1,z2,f1,f2,dish,factor=None):
     return volume.value
 
     
+def deltaBeamsize(bmaj,bmin,rmaj,rmin):
+    beamArea = math.pi * bmaj/2 * bmin/2
+    regArea = math.pi * rmaj * rmin
 
+    factor = regArea/beamArea
+
+    return factor
     
 
 

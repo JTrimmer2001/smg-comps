@@ -2,6 +2,8 @@
 # statistic: 4
 # ellipse[[192.794561pix, 169.102606pix], [3.847471pix, 6.215145pix], 0.000000deg]
 # ellipse(wcs:ICRS)[[3:33:05.6544674149, -27:33:28.3743357531], [0.9618676677", 1.5537862324"], 0.000000deg]
+# channel 809
+# factor 0.9158946462999477/3.6635785851997906
 
  Gaussian function fitting with 2 component(s)
  summary from method 'trust-region/levenberg-marquardt'
