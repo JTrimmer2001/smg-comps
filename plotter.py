@@ -238,31 +238,34 @@ def luminosityFunction():
         if table.at[item,'CO2-1'] == True:
             line = '2-1'
             v = af.obsVolume(z1=1.00,z2=1.75,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+            freq_obs = 230.538
         elif table.at[item,'CO3-2'] == True:
             line = '3-2'
             v = af.obsVolume(z1=2.02,z2=3.11,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+            freq_obs = 345.796
         elif table.at[item,'CO4-3'] == True:
             line = '4-3'
             v = af.obsVolume(z1=3.01,z2=4.48,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+            freq_obs = 461.041
         else:
             continue
 
-        F = table.at[item, 'FLUX_MAX']
-        '''WRONGGGGG'''
+        F = table.at[item, 'f_line']*table.at[item,'f_factor']
+
         L = ((3.25e+7)/(1+z)**3)*F*(freq_obs**(-2))*(D_l**2)
         Lfunc = (1/v)*L*fidelity
         stats = [L,Lfunc]
 
         if line == '2-1':
-            co2_1.append(stats)
+            co2_1.append(L)
         elif line == '3-2':
-            co3_2.append(stats)
+            co3_2.append(L)
         elif line == '4-3':
-            co4_3.append(stats)
+            co4_3.append(L)
         else:
             continue
 
-    f, axs = plt.subplots(1,3,sharey=True)
+    '''f, axs = plt.subplots(1,3,sharey=True)
 
     x, y = zip(*co2_1)
     axs[0].scatter(x,y,label='CO2-1')
@@ -283,13 +286,18 @@ def luminosityFunction():
         ax.set(xlabel='Luminosity',ylabel='Density Mpc^-3')
         ax.set_xscale('log')
         ax.set_yscale('log')
-        '''ax.set_xlim(7,12)
-        ax.set_ylim(-6,-0.5)'''
+        ax.set_xlim(7,12)
+        ax.set_ylim(-6,-0.5)
         ax.label_outer()
         ax.legend()
 
     f.tight_layout()
-    plt.show()
+    plt.show()'''
+
+    for c in (co2_1,co3_2,co4_3):
+        print(c)
+
+
 
 
 luminosityFunction()
