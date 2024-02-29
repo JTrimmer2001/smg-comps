@@ -60,6 +60,25 @@ def deltaBeamsize(bmaj,bmin,rmaj,rmin):
 
     return factor
     
+def dexHistogram(min,max,data):
+    '''Method to get a "per dex" visualisation of data
+    
+    Inputs: min (int)  :Minimum power of 10 to use for the histogram
+            max (int)  :Maximum power of 10
+            data(list) :List of data to be used for the histogram
+            
+    Outputs: hist (npy histogram):  values of histogram
+                                    Has a values and bin edge component'''
+    
+    binEdges = []
+
+    for power in range(min,max):
+        binEdges.append(10**power)
+
+    hist = np.histogram(data,bins=binEdges)
+
+    return hist
+
 
 
     

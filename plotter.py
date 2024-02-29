@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import numpy as np
 from astropy.table import Table as tb
 from astropy.cosmology import FlatLambdaCDM
@@ -223,9 +224,9 @@ def luminosityFunction():
     index = list(table.index.values)
     cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
 
-    co2_1 = []
-    co3_2 = []
-    co4_3 = []
+    hist2_1 = np.array([0,0,0,0],dtype=np.float64)
+    hist3_2 = np.array([0,0,0,0],dtype=np.float64)
+    hist4_3 = np.array([0,0,0,0],dtype=np.float64)
 
     candidateStats = {}
 
@@ -237,33 +238,40 @@ def luminosityFunction():
 
         if table.at[item,'CO2-1'] == True:
             line = '2-1'
-            v = af.obsVolume(z1=1.00,z2=1.75,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
             freq_obs = 230.538
         elif table.at[item,'CO3-2'] == True:
             line = '3-2'
-            v = af.obsVolume(z1=2.02,z2=3.11,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
             freq_obs = 345.796
         elif table.at[item,'CO4-3'] == True:
             line = '4-3'
-            v = af.obsVolume(z1=3.01,z2=4.48,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
             freq_obs = 461.041
         else:
             continue
 
-        F = table.at[item, 'f_line']*table.at[item,'f_factor']
+        F = table.at[item, 'f_line']
 
         L = ((3.25e+7)/(1+z)**3)*F*(freq_obs**(-2))*(D_l**2)
-        Lfunc = (1/v)*L*fidelity
-        stats = [L,Lfunc]
 
         if line == '2-1':
-            co2_1.append(L)
+            hist, bins = af.dexHistogram(7,12,L)
+            hist = fidelity * hist
+            hist2_1 += hist
         elif line == '3-2':
-            co3_2.append(L)
+            hist, bins = af.dexHistogram(7,12,L)
+            hist = fidelity * hist
+            hist3_2 += hist
         elif line == '4-3':
-            co4_3.append(L)
+            hist, bins = af.dexHistogram(7,12,L)
+            hist = fidelity * hist
+            hist4_3 += hist 
         else:
             continue
+    
+    v2_1 = af.obsVolume(z1=1.00,z2=1.75,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+    v3_2 = af.obsVolume(z1=2.02,z2=3.11,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+    v4_3 = af.obsVolume(z1=3.01,z2=4.48,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+    vs = [v2_1,v3_2,v4_3]
+    hists = [hist2_1,hist3_2,hist4_3]
 
     '''f, axs = plt.subplots(1,3,sharey=True)
 
@@ -294,8 +302,40 @@ def luminosityFunction():
     f.tight_layout()
     plt.show()'''
 
-    for c in (co2_1,co3_2,co4_3):
-        print(c)
+    f, axs = plt.subplots(1,3,sharey=True)
+
+    for c in range(3):
+        v = vs[c]
+        hist = hists[c]
+
+        for i in range(4):
+            xmin = bins[i]
+            xmax = bins[i+1]
+            width = xmax - xmin
+
+            value = hist[i]
+            lf = (1/v)*value
+
+            err = np.sqrt(value)
+            ymin = value - err
+            height = 2*err
+            xy = (xmin, ymin)
+
+            rect = patches.Rectangle(xy,width,height)
+
+            axs[c].add_patch(rect)
+
+    for ax in axs:
+        ax.set(xlabel='Luminosity',ylabel='Density Mpc^-3')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax.set_xlim(10**7,10**12)
+        ax.set_ylim(10**(-6),10**(-0.5))
+        ax.label_outer()
+        ax.legend()
+
+    f.tight_layout()
+    plt.show()
 
 
 
