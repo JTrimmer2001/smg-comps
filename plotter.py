@@ -316,8 +316,8 @@ def luminosityFunction():
             value = hist[i]
             lf = (1/v)*value
 
-            err = np.sqrt(value)
-            ymin = value - err
+            err = np.sqrt(lf)
+            ymin = lf - err
             height = 2*err
             xy = (xmin, ymin)
 

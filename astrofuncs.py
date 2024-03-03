@@ -2,6 +2,7 @@ import numpy as np
 import math
 from astropy.cosmology import FlatLambdaCDM
 import astropy.units as u
+from astropy.coordinates import Angle
 
 ######### Cosmology details ###############
 cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
@@ -24,12 +25,12 @@ def obsVolume(z1,z2,f1,f2,dish,factor=None):
     
     ###### Getting relevant measurements ######
     wavel1 = 3e+8 / f1
-    fwhm1 = 1.22 * (wavel1/dish)
-    r1 = fwhm1/2
+    fwhm1 = Angle(1.22 * (wavel1/dish),unit=u.rad)
+    r1 = fwhm1.arcsec/2
     
     wavel2 = 3e+8/f2
-    fwhm2 = 1.22 * (wavel2/dish)
-    r2 = fwhm2/2
+    fwhm2 = Angle(1.22 * (wavel2/dish),unit=u.rad)
+    r2 = fwhm2.arcsec/2
 
     conversion1=cosmo.kpc_comoving_per_arcmin(z1).to(u.Mpc/u.arcmin)
     conversion2 = cosmo.kpc_comoving_per_arcmin(z2).to(u.Mpc/u.arcmin)
