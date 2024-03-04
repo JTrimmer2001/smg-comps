@@ -267,9 +267,9 @@ def luminosityFunction():
         else:
             continue
     
-    v2_1 = af.obsVolume(z1=1.00,z2=1.75,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
-    v3_2 = af.obsVolume(z1=2.02,z2=3.11,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
-    v4_3 = af.obsVolume(z1=3.01,z2=4.48,f1=84e+9,f2=116e+9,factor=np.sqrt(2),dish=12)
+    v2_1 = af.obsVolume(z1=1.00,z2=1.75,f1=100e+9,f2=102e+9,factor=np.sqrt(2),dish=12)
+    v3_2 = af.obsVolume(z1=2.02,z2=3.11,f1=100e+9,f2=102e+9,factor=np.sqrt(2),dish=12)
+    v4_3 = af.obsVolume(z1=3.01,z2=4.48,f1=100e+9,f2=102e+9,factor=np.sqrt(2),dish=12)
     vs = [v2_1,v3_2,v4_3]
     hists = [hist2_1,hist3_2,hist4_3]
 

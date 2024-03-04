@@ -32,8 +32,8 @@ def obsVolume(z1,z2,f1,f2,dish,factor=None):
     fwhm2 = Angle(1.22 * (wavel2/dish),unit=u.rad)
     r2 = fwhm2.arcsec/2
 
-    conversion1=cosmo.kpc_proper_per_arcmin(z1).to(u.Mpc/u.arcmin)
-    conversion2 = cosmo.kpc_proper_per_arcmin(z2).to(u.Mpc/u.arcmin)
+    conversion1=cosmo.kpc_comoving_per_arcmin(z1).to(u.Mpc/u.arcmin)
+    conversion2 = cosmo.kpc_comoving_per_arcmin(z2).to(u.Mpc/u.arcmin)
 
     r1 = r1 * conversion1.value
     r2 = r2 * conversion2.value # Converts angular radius to Mpc radius at z1 and z2
@@ -42,7 +42,7 @@ def obsVolume(z1,z2,f1,f2,dish,factor=None):
         r1 = r1*factor
         r2 = r2*factor
 
-    h = cosmo.lookback_distance(z2)-cosmo.lookback_distance(z1)
+    h = cosmo.luminosity_distance(z2)-cosmo.luminosity_distance(z1)
 
     volume = (1/3)*math.pi*(r1**2+r1*r2+r2**2)*h
     return volume.value
