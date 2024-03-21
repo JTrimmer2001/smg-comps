@@ -3,6 +3,7 @@ import math
 from astropy.cosmology import FlatLambdaCDM
 import astropy.units as u
 from astropy.coordinates import Angle
+import pandas as pd
 
 ######### Cosmology details ###############
 cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
@@ -75,6 +76,9 @@ def dexHistogram(min,max,data):
 
     return hist
 
-
+def dfsorter(path):
+    df = pd.read_csv(path,names=['up','across'])
+    result = df.sort_values(by=['up'])
+    result.to_csv(path)
 
     

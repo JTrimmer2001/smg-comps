@@ -304,7 +304,7 @@ def luminosityFunction():
 
     f, axs = plt.subplots(1,3,sharey=True)
 
-    for c in range(3):
+    for c in range(3): #Adds rectangular patches to plots
         v = vs[c]
         hist = hists[c]
 
@@ -322,19 +322,142 @@ def luminosityFunction():
             xy = (xmin, ymin)
 
             rect = patches.Rectangle(xy,width,height)
+            rect.set_fc('deepskyblue')
+
+            if ymin <= 0:
+                rect.set_fill(False)
+            else:
+                rect.set_hatch('///')
+            
+            rect.set_zorder(2)
 
             axs[c].add_patch(rect)
 
+
+    # Adding prior modelling data:
+    co2_1Lagos = pd.read_csv('plots/reportFigures/targetLfMaterials/co2-1 Lagos.csv')
+    co2_1Popping = pd.read_csv('plots/reportFigures/targetLfMaterials/co2-1 popping.csv')
+    co3_2Lagos = pd.read_csv('plots/reportFigures/targetLfMaterials/co3-2 lagos.csv')
+    co3_2Popping = pd.read_csv('plots/reportFigures/targetLfMaterials/co3-2 popping.csv')
+    co3_2Vallini = pd.read_csv('plots/reportFigures/targetLfMaterials/co3-2 Vallini.csv')
+    co4_3Lagos = pd.read_csv('plots/reportFigures/targetLfMaterials/co4-3 Lagos.csv')
+    co4_3Popping = pd.read_csv('plots/reportFigures/targetLfMaterials/co4-3 popping.csv')
+
+    #Plotting prior modelling data:
+    axs[0].plot('up','across',data=co2_1Lagos,label='Lagos 12',zorder=3)
+    axs[0].plot('up','across',data=co2_1Popping,label='Popping 16',zorder=3)
+
+    axs[1].plot('up','across',data=co3_2Lagos,label='Lagos 12',zorder=3)
+    axs[1].plot('up','across',data=co3_2Popping,label='Popping 16',zorder=3)
+    axs[1].plot('up','across',data=co3_2Vallini,label='Vallini 16',zorder=3)
+
+    axs[2].plot('up','across',data=co4_3Lagos,label='Lagos 12',zorder=3)
+    axs[2].plot('up','across',data=co4_3Popping,label='Popping 16',zorder=3)
+
+
+    #Plotting walter rectangles
+    '''axs[0].add_patch(patches.Rectangle(xy=[1000000000,0.0006309573444801943],
+                               width=10000000000-1000000000,
+                               height=0.0031622776601683794-0.0006309573444801943,
+                               facecolor='coral',
+                               hatch='\\'))
+    axs[0].add_patch(patches.Rectangle(xy=[10000000000,0.00008576958985908945],
+                               width=100000000000-10000000000,
+                               height=0.0017113283041617845-0.00008576958985908945,
+                               facecolor='coral',
+                               hatch='\\'))
+    axs[0].add_patch(patches.Rectangle(xy=[100000000000,0],
+                               width=1000000000000-100000000000,
+                               height=0.0009440608762859226,
+                               color='coral',
+                               fill=False))
+    
+    axs[1].add_patch(patches.Rectangle(xy=[1000000000, 0.00042986623470822724],
+                                       height=0.001920141938638801-0.00042986623470822724,
+                                       width=10000000000-1000000000,
+                                       facecolor='coral',
+                                       hatch='\\'))
+    axs[1].add_patch(patches.Rectangle(xy=[10000000000, 0.00005207948328595465],
+                                       width=100000000000-10000000000,
+                                       height=0.0009623506263980868-0.00005207948328595465,
+                                       facecolor='coral',
+                                       hatch='\\'))
+    axs[1].add_patch(patches.Rectangle(xy=[100000000000,0],
+                                       width=1000000000000-100000000000,
+                                       height=0.0005411695265464627,
+                                       color='coral',
+                                       fill=False))
+    
+    axs[2].add_patch(patches.Rectangle(xy=[1000000000, 0.0001952455581016861],
+                                       width=10000000000-1000000000,
+                                       height=0.001206033910067459-0.0001952455581016861,
+                                       facecolor='coral',
+                                       hatch='\\'))
+    axs[2].add_patch(patches.Rectangle(xy=[10000000000,0],
+                                       width=1000000000000-10000000000,
+                                       height=0.000445847537963288,
+                                       color='coral',
+                                       fill=False))'''
+
+    filledBoxes = [patches.Rectangle(xy=[1000000000,0.0006309573444801943],
+                               width=10000000000-1000000000,
+                               height=0.0031622776601683794-0.0006309573444801943),
+                   patches.Rectangle(xy=[10000000000,0.00008576958985908945],
+                               width=100000000000-10000000000,
+                               height=0.0017113283041617845-0.00008576958985908945),
+                   patches.Rectangle(xy=[1000000000, 0.00042986623470822724],
+                                       height=0.001920141938638801-0.00042986623470822724,
+                                       width=10000000000-1000000000,),
+                   patches.Rectangle(xy=[10000000000, 0.00005207948328595465],
+                                       width=100000000000-10000000000,
+                                       height=0.0009623506263980868-0.00005207948328595465,),
+                   patches.Rectangle(xy=[1000000000, 0.0001952455581016861],
+                                       width=10000000000-1000000000,
+                                       height=0.001206033910067459-0.0001952455581016861)]
+    
+    unfilledBoxes=[patches.Rectangle(xy=[100000000000,0],
+                               width=1000000000000-100000000000,
+                               height=0.0009440608762859226),
+                   patches.Rectangle(xy=[100000000000,0],
+                                       width=1000000000000-100000000000,
+                                       height=0.0005411695265464627),
+                   patches.Rectangle(xy=[10000000000,0],
+                                       width=1000000000000-10000000000,
+                                       height=0.000445847537963288)]
+    
+    for b in filledBoxes:
+        b.set_fc('plum')
+        b.set_hatch('\\')
+        b.set_zorder(1)
+
+    for b in unfilledBoxes:
+        b.set_color('plum')
+        b.set_fill(False)
+        b.set_zorder(1)
+
+    axs[0].add_patch(filledBoxes[0])
+    axs[0].add_patch(filledBoxes[1])
+    axs[0].add_patch(unfilledBoxes[0])
+
+    axs[1].add_patch(filledBoxes[2])
+    axs[1].add_patch(filledBoxes[3])
+    axs[1].add_patch(unfilledBoxes[1])
+
+    axs[2].add_patch(filledBoxes[4])
+    axs[2].add_patch(unfilledBoxes[2])
+
+    #Formatting the subplots
     for ax in axs:
         ax.set(xlabel='Luminosity',ylabel='Density Mpc^-3')
         ax.set_xscale('log')
         ax.set_yscale('log')
-        ax.set_xlim(10**7,10**12)
+        ax.set_xlim(10**7,10**11.9)
         ax.set_ylim(10**(-6),10**(-0.5))
         ax.label_outer()
         ax.legend()
 
     f.tight_layout()
+    plt.subplots_adjust(wspace=0, hspace=0)
     plt.show()
 
 
