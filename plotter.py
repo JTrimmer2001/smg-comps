@@ -9,8 +9,11 @@ import pandas as pd
 import math
 import astrofuncs as af
 
+path = 'plots/reportFigures/'
+
 def fplotter():
     cats = gt.trawler('mastercats')
+    plotpath = path+'fidelity'
 
     for i in cats:
         parts = i.split('_')
@@ -19,12 +22,25 @@ def fplotter():
         mask = (data['F_kw']>0)
         fidelity = data[mask]
 
-        if os.path.isdir('plots/fidelity/'+parts[0]+'/') == False:
-            os.makedirs('plots/fidelity/'+parts[0]+'/')
+        if os.path.isdir('{}/{}/'.format(plotpath,parts[0])) == False:
+            os.makedirs('{}/{}/'.format(plotpath,parts[0]))
 
-        plt.hist(fidelity['F_kw'],bins=40)
+        '''plt.hist(fidelity['F_kw'],bins=40)
         plt.savefig('plots/fidelity/'+parts[0]+'/'+parts[1]+'.png')
         plt.xlabel('F_kw')
+        plt.clf()'''
+
+        fileloc = str('{}/{}/{}.png').format(plotpath,parts[0],parts[1])
+        fig, ax = plt.subplots()
+        ax.set_xlim(0,1)
+
+        ax.hist(fidelity['F'])
+
+        af.plotFormatter(ax,log='y')
+        fig.tight_layout()
+        plt.subplots_adjust(wspace=0, hspace=0)
+
+        plt.savefig(fileloc)
         plt.clf()
 
 def fvsnr():
@@ -239,17 +255,18 @@ def luminosityFunction():
 
         if table.at[item,'CO2-1'] == True:
             line = '2-1'
-            freq_obs = 230.538
+            #freq_obs = 230.538
         elif table.at[item,'CO3-2'] == True:
             line = '3-2'
-            freq_obs = 345.796
+            #freq_obs = 345.796
         elif table.at[item,'CO4-3'] == True:
             line = '4-3'
-            freq_obs = 461.041
+            #freq_obs = 461.041
         else:
             continue
 
         F = table.at[item, 'f_line']
+        freq_obs = table.at[item,'FREQ_GHZ']
 
         L = ((3.25e+7)/(1+z)**3)*F*(freq_obs**(-2))*(D_l**2)
 
@@ -325,8 +342,7 @@ def luminosityFunction():
             if ymin <= 0:
                 axs[c].hlines(y=height,xmin=xmin,xmax=xmax)
             else:
-                rect = patches.Rectangle(xy,width,height)
-                rect.set_fc('deepskyblue')
+                rect.set_alpha(0.3)
                 rect.set_hatch('///')
                 rect.set_zorder(2)
 
@@ -465,6 +481,7 @@ def luminosityFunction():
     f.tight_layout()
     plt.subplots_adjust(wspace=0, hspace=0)
     plt.show()
+
 
 
 luminosityFunction()
