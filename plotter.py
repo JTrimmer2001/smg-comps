@@ -116,12 +116,12 @@ def radecFidelity():
         fig.savefig('plots/radec/betterwFkw/'+parts[0]+'/'+parts[1]+'.pdf',bbox_inches='tight')
         plt.close('all')'''
     
-    alldata = pd.read_csv('master_beamlim.csv')
-    limdata = pd.read_csv('master_doubles.csv')
-    path = 'plots/radec/doubles_testing/'
+    alldata = pd.read_csv('master.csv')
+    limdata = pd.read_csv('FCatalogues/master_beamlim.csv')
+    path = 'plots/special/'
     #### INIT File paths and strings ####
 
-    imglist = pd.unique(limdata['source'])
+    imglist = ['aless41']
 
     for img in imglist:
         imgAll = alldata[alldata['source'] == img]
@@ -151,7 +151,7 @@ def radecFidelity():
             f08=ax.scatter(fidelity0_8['RA'],fidelity0_8['DEC'],marker='1',c='b',label='F_kw > 0.8')
             ax.legend(handles=[f00,f06,f08])'''###Use this when doing plots with a full sample of raw data
 
-            raw = ax.scatter(imgWin['RA'], imgWin['DEC'], s=0.5,c='r', label = 'All Data')
+            raw = ax.scatter(imgWin['RA'], imgWin['DEC'], s=0.5,c='gray', label = 'All Data')
             data = ax.scatter(limWin['RA'], limWin['DEC'],marker='1',c='b',label='Duplicates')
             ax.legend(handles=[raw,data])
 
@@ -159,7 +159,8 @@ def radecFidelity():
             
 
             fig.savefig(path+img+'/'+window+'.pdf',bbox_inches='tight')
-            plt.close('all')
+            af.tableformer(ax)
+            plt.show()
 
 
 
@@ -321,17 +322,17 @@ def luminosityFunction():
             height = 2*err
             xy = (xmin, ymin)
 
-            rect = patches.Rectangle(xy,width,height)
-            rect.set_fc('deepskyblue')
-
             if ymin <= 0:
-                rect.set_fill(False)
+                axs[c].hlines(y=height,xmin=xmin,xmax=xmax)
             else:
+                rect = patches.Rectangle(xy,width,height)
+                rect.set_fc('deepskyblue')
                 rect.set_hatch('///')
-            
-            rect.set_zorder(2)
+                rect.set_zorder(2)
 
-            axs[c].add_patch(rect)
+                axs[c].add_patch(rect)
+            
+            
 
 
     # Adding prior modelling data:
@@ -424,6 +425,7 @@ def luminosityFunction():
                    patches.Rectangle(xy=[10000000000,0],
                                        width=1000000000000-10000000000,
                                        height=0.000445847537963288)]
+
     
     for b in filledBoxes:
         b.set_fc('plum')
@@ -438,13 +440,16 @@ def luminosityFunction():
     axs[0].add_patch(filledBoxes[0])
     axs[0].add_patch(filledBoxes[1])
     axs[0].add_patch(unfilledBoxes[0])
+    axs[0].hlines(y=0.0009440608762859226, xmin=100000000000, xmax=1000000000000)
 
     axs[1].add_patch(filledBoxes[2])
     axs[1].add_patch(filledBoxes[3])
     axs[1].add_patch(unfilledBoxes[1])
+    axs[1].hlines(y=0.0005411695265464627, xmin=100000000000, xmax=1000000000000)
 
     axs[2].add_patch(filledBoxes[4])
     axs[2].add_patch(unfilledBoxes[2])
+    axs[2].hlines(y=0.000445847537963288, xmin=10000000000, xmax=100000000000)
 
     #Formatting the subplots
     for ax in axs:
@@ -455,12 +460,13 @@ def luminosityFunction():
         ax.set_ylim(10**(-6),10**(-0.5))
         ax.label_outer()
         ax.legend()
+        af.tableformer(ax)
 
     f.tight_layout()
     plt.subplots_adjust(wspace=0, hspace=0)
     plt.show()
 
 
-
-
 luminosityFunction()
+
+#radecFidelity()

@@ -1,9 +1,11 @@
+from matplotlib import axis
 import numpy as np
 import math
 from astropy.cosmology import FlatLambdaCDM
 import astropy.units as u
 from astropy.coordinates import Angle
 import pandas as pd
+import matplotlib.pyplot as plt
 
 ######### Cosmology details ###############
 cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
@@ -82,3 +84,15 @@ def dfsorter(path):
     result.to_csv(path)
 
     
+def tableformer(ax):
+    ax_r = ax.secondary_yaxis('right')
+    ax_t = ax.secondary_xaxis('top')
+    ax_r.yaxis.set_major_formatter(plt.NullFormatter())
+    ax_r.tick_params(which='both',direction='in')
+    ax_t.xaxis.set_major_formatter(plt.NullFormatter())
+    ax_t.tick_params(which='both',direction='in')
+
+    ax.tick_params(which='both',axis='x', direction='in')
+    ax.tick_params(which='both',axis='y', direction='in')
+
+    return ax

@@ -1,0 +1,6 @@
+# Z-profile-Region_1-Statistic_Mean-Coordinate_Current aless41_dirtycube_allspw_nopbcorr.fits
+# xLabel: [BARYCENT] Radio velocity (km/s)
+# yLabel: Value (Jy/beam)
+# ellipse[[185.769577pix, 187.963144pix], [3.243746pix, 4.780258pix], 5.440332deg]	
+# ellipse(wcs:ICRS)[[3:31:10.0762165423, -27:52:36.7592113845], [0.8109365406", 1.1950643756"], 5.440332deg]	
+# x	y
