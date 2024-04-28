@@ -4,6 +4,7 @@ from astropy.cosmology import FlatLambdaCDM
 import astropy.units as u
 from astropy.coordinates import Angle
 import pandas as pd
+import matplotlib.pyplot as plt
 
 ######### Cosmology details ###############
 cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
@@ -81,4 +82,19 @@ def dfsorter(path):
     result = df.sort_values(by=['up'])
     result.to_csv(path)
 
+def plotFormatter(axe,log='none'):
+    '''
+    Formats plots nicely:
+        > axis ticks on top and right
+        > log scales axes (optional) ('x','y','both')
+        > Other stuff as and when I need it'''
+    axe.tick_params(bottom=True,left=True,right=True,top=True)
+    if log=='both':
+        axe.set_yscale('log')
+        axe.set_xscale('log')
+    elif log=='x':
+        axe.set_xscale('log')
+    elif log=='y':
+        axe.set_yscale('log')
     
+
